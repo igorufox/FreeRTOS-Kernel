@@ -84,7 +84,7 @@
 /* The kernel's list.h is read at the end of this file (below), before FreeRTOS.h gives these their defaults: here, at
  * their default values */
 #define configNUMBER_OF_CORES                       1
-#define configUSE_MINI_LIST_ITEM                    1
+#define configUSE_MINI_LIST_ITEM                    0   /* a full end marker: GCC 14 strict aliasing, see the ESP8266 port 19.11 */
 #define configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES   0
 #define configENABLE_BACKWARD_COMPATIBILITY         1
 

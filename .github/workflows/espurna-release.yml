@@ -1,0 +1,55 @@
+name: ESPurna release
+
+# The PlatformIO package framework-freertos-kernel of the espurna branch (the kernel V11.1.0 unchanged plus the ARM968
+# port of the BK7231N), packed as a zip of the files of git. Every run keeps the package as an artifact; a push to
+# espurna also releases it: the tag is the version of package.json (11.1.0-espurna.2), made by this workflow when that
+# release does not exist yet - a new release is a version bump of package.json.
+on:
+  push:
+    branches: [espurna]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Version
+        run: |
+          TAG=$(python3 -c "import json; print(json.load(open('package.json'))['version'].replace('+', '-'))")
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "ZIP=framework-freertos-kernel-$TAG.zip" >> "$GITHUB_ENV"
+          if gh release view "$TAG" > /dev/null 2>&1; then echo "RELEASED=1" >> "$GITHUB_ENV"; fi
+
+      - name: Package
+        run: |
+          mkdir -p dist
+          git ls-files > dist/files.txt
+          python3 - "dist/$ZIP" dist/files.txt <<'PY'
+          import sys, zipfile
+          out, names = sys.argv[1], open(sys.argv[2]).read().splitlines()
+          with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+              for name in filter(None, names):
+                  z.write(name)
+          with zipfile.ZipFile(out) as z:
+              listed = z.namelist()
+          for need in ("package.json", "tasks.c", "portable/GCC/ARM968/port.c"):
+              assert need in listed, need + " is missing"
+          print(out, len(listed), "files")
+          PY
+          ls -l "dist/$ZIP"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: framework-freertos-kernel
+          path: dist/*.zip
+
+      - name: Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/espurna' && env.RELEASED != '1'
+        run: gh release create "$TAG" "dist/$ZIP" --target "$GITHUB_SHA" --title "$TAG" --notes "FreeRTOS-Kernel V11.1.0 for ESPurna: the kernel unchanged, the ARM968 port of the BK7231N (portable/GCC/ARM968)"

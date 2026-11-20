@@ -1,6 +1,6 @@
 {
   "name": "framework-freertos-kernel",
-  "version": "11.1.0-espurna.1",
+  "version": "11.1.0-espurna.2",
   "description": "FreeRTOS-Kernel V11.1.0, the one kernel source of ESPurna's FreeRTOS chips (ESP8266 lx106, Beken ARM968; ESP32 via ESP-IDF CONFIG_FREERTOS_SMP V11.1.0)",
   "keywords": ["freertos"],
   "license": "MIT",
