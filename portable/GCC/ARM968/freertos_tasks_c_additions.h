@@ -56,4 +56,4 @@ UBaseType_t uxPortSchedulerSuspended( void )
 _Static_assert( offsetof( TCB_t, pxTopOfStack ) == 0, "boot_handlers.S: pxTopOfStack is not the first word of the TCB" );
 _Static_assert( offsetof( TCB_t, xEventListItem ) + offsetof( ListItem_t, pxContainer ) == 40,
                 "rtcmem_beken.cpp TcbEventContainer: the event list of a task is not at offset 40 of the TCB" );
-_Static_assert( sizeof( List_t ) == 20, "rtcmem_beken.cpp QueueReceiveList: a List_t is not 5 words" );
+_Static_assert( sizeof( List_t ) == 28, "rtcmem_beken.cpp QueueReceiveList: a List_t is not 7 words (configUSE_MINI_LIST_ITEM 0)" );
