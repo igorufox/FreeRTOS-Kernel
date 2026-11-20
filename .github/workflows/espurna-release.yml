@@ -52,4 +52,6 @@ jobs:
 
       - name: Release
         if: github.event_name == 'push' && github.ref == 'refs/heads/espurna' && env.RELEASED != '1'
-        run: gh release create "$TAG" "dist/$ZIP" --target "$GITHUB_SHA" --title "$TAG" --notes "FreeRTOS-Kernel V11.1.0 for ESPurna: the kernel unchanged, the ARM968 port of the BK7231N (portable/GCC/ARM968)"
+        run: |
+          gh release create "$TAG" "dist/$ZIP" --target "$GITHUB_SHA" --title "$TAG" \
+            --notes "FreeRTOS-Kernel V11.1.0 for ESPurna - the kernel unchanged, the ARM968 port of the BK7231N (portable/GCC/ARM968)"
